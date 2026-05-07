@@ -7,7 +7,7 @@ O objetivo deste teste é criar o backend de um **"Log de Performance"**. Em vez
 * Prazo: O projeto deve ser entregue até a próxima segunda-feira.
 * Uso de IA: O uso de ferramentas de Inteligência Artificial (ChatGPT, GitHub Copilot, etc.) é permitido.
 * Transparência: Caso utilize IA, você deve commitar os artefatos gerados junto ao repositório. Queremos entender como você utiliza essas ferramentas para acelerar seu fluxo de trabalho.
-* Faça o ** fork desse projeto** e me avise quando terminar o [wouerner](https://www.linkedin.com/in/wouerner/) no linkedin.
+* Faça o **fork desse projeto** e me avise quando terminar o [wouerner](https://www.linkedin.com/in/wouerner/) no linkedin. (necessario para pode acompanhar pelo github quem participou)
 
 ## 📝 O Contexto
 Muitas vezes trabalhamos muito, mas produzimos pouco. Você deve construir uma API simples que ajude o usuário a registrar seu nível de produtividade e, ao final, entregue um **diagnóstico inteligente** de como foi o seu período de trabalho.
