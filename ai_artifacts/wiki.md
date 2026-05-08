@@ -11,6 +11,9 @@ c:\projetos\desafio sou junior\
 ├── .venv/                # Ambiente virtual Python
 ├── api/                  # Backend FastAPI
 │   ├── domain/           # Entidades e Regras de Negócio (Isolado)
+│   │   ├── entities.py   # Dataclasses de domínio (FocusLog)
+│   │   ├── metrics.py    # Calculadora de métricas de produtividade e esgotamento
+│   │   └── strategies.py # Matriz de estratégias de feedback profissional
 │   ├── usecases/         # Casos de uso da aplicação (Orquestração)
 │   ├── infrastructure/   # Controladores FastAPI e Persistência SQLite
 │   └── main.py           # Ponto de entrada da API
@@ -44,12 +47,12 @@ As métricas derivam dos registros (`FocusLog`), que armazenam:
 - **Índice de Esgotamento**: Média da diferença matemática onde Foco > Energia. Quanto maior a discrepância, maior o custo cognitivo pago pelo usuário.
 - **Taxa de Uso de IA (%)**: Sessões com auxílio de IA em relação ao total de sessões.
 
-## 🎮 Sistema de Diagnóstico (Matriz de Feedback)
-Implementado usando o **Design Pattern Strategy**, as regras de negócio avaliam as métricas e retornam "Status" RPGísticos:
-1. **Hiperfoco Exaustivo (Debuff)**: Foco muito alto enquanto a energia está muito baixa. Alerta para a "mana no fim".
-2. **Simbiose Mágica (Buff)**: Alta utilização de IA resultando em preservação da energia vital.
-3. **Neblina Mental (Debuff)**: Foco consistentemente baixo. Sugere quebras de rotina ou hidratação.
-4. **Fluxo Sustentável (Condição Ideal)**: Manutenção perfeita e equilibrada entre as barras de energia e foco.
+## 📋 Sistema de Diagnóstico (Matriz de Feedback)
+Implementado usando o **Design Pattern Strategy**, as regras de negócio avaliam as métricas de forma sequencial e priorizada, retornando diagnósticos de foco focados e profissionais:
+1. **Hiperfoco Exaustivo**: Nível de foco excelente associado a um alto esgotamento cognitivo. Recomenda repouso para evitar cansaço extremo.
+2. **Simbiose com IA**: Uso produtivo e frequente de assistentes de IA ajudando a otimizar as entregas e poupar estamina mental.
+3. **Neblina Mental**: Nível de foco persistentemente baixo. Sugere quebras de rotina, beber água ou dividir tarefas grandes em micro-metas.
+4. **Fluxo Sustentável**: Equilíbrio ideal entre boa produtividade e energia estável, permitindo foco saudável a longo prazo.
 
 ## 🚀 Instalação e Execução
 

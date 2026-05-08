@@ -3,9 +3,9 @@
 Este documento rastreia o progresso do desenvolvimento do projeto do zero à entrega.
 
 ## Fase 1: Setup e Infraestrutura
-- [ ] Criar a estrutura base de diretórios (`/api`, `/client`, `/docs`).
-- [ ] Configurar os arquivos `requirements.txt` (FastAPI, Pydantic, SQLAlchemy, Uvicorn, Requests, Keyboard).
-- [ ] Configurar um `main.py` inicial no backend que rode o FastAPI com um endpoint de health-check simples.
+- [x] Criar a estrutura base de diretórios (`/api`, `/client`, `/docs`).
+- [x] Configurar os arquivos `requirements.txt` (FastAPI, Pydantic, SQLAlchemy, Uvicorn, Requests, Keyboard).
+- [x] Configurar um `main.py` inicial no backend que rode o FastAPI com um endpoint de health-check simples.
 
 ## Fase 2: Domínio e Regras de Negócio (Backend)
 - [x] Criar o modelo/entidade de domínio `FocusLog` usando Dataclasses.
