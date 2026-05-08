@@ -1,0 +1,10 @@
+# Backend API
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+sqlalchemy>=2.0.0
+
+# Client Desktop
+requests>=2.31.0
+keyboard>=0.13.5
+# Nota: tkinter já é nativo na instalação padrão do Python no Windows.
