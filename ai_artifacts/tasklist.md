@@ -8,10 +8,10 @@ Este documento rastreia o progresso do desenvolvimento do projeto do zero à ent
 - [ ] Configurar um `main.py` inicial no backend que rode o FastAPI com um endpoint de health-check simples.
 
 ## Fase 2: Domínio e Regras de Negócio (Backend)
-- [ ] Criar o modelo/entidade de domínio `FocusLog` usando Dataclasses.
-- [ ] Implementar a interface (Abstract Base Class) `FeedbackRule` do padrão Strategy.
-- [ ] Implementar as 5 regras de Strategy (ExhaustiveHyperfocusRule, MagicalSymbiosisRule, MentalFogRule, SustainableFlowRule, DefaultFeedbackRule).
-- [ ] Implementar a classe pura `MetricsCalculator` (fórmulas de índice de esgotamento e média).
+- [x] Criar o modelo/entidade de domínio `FocusLog` usando Dataclasses.
+- [x] Implementar a interface (Abstract Base Class) `FeedbackRule` do padrão Strategy.
+- [x] Implementar as 5 regras de Strategy (ExhaustiveHyperfocusRule, MagicalSymbiosisRule, MentalFogRule, SustainableFlowRule, DefaultFeedbackRule).
+- [x] Implementar a classe pura `MetricsCalculator` (fórmulas de índice de esgotamento e média).
 
 ## Fase 3: Casos de Uso (Backend)
 - [ ] Criar Interface `FocusLogRepository` para inversão de dependência (SOLID).
