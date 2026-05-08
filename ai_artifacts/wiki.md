@@ -3,8 +3,29 @@
 ## 📌 Visão Geral
 Sistema de log de performance focado em desenvolvedores e estudantes com TDAH. O objetivo principal é minimizar a fricção de entrada e gerar diagnósticos inteligentes sobre o "estado de fluxo" (flow) e o "burnout cognitivo", gamificando a produtividade.
 
-## 🏗 Arquitetura
-O projeto adota Clean Architecture e é dividido em duas partes principais:
+## 🏗 Arquitetura e Estrutura de Pastas
+O projeto adota Clean Architecture e está estruturado da seguinte forma:
+
+```text
+c:\projetos\desafio sou junior\
+├── .venv/                # Ambiente virtual Python
+├── api/                  # Backend FastAPI
+│   ├── domain/           # Entidades e Regras de Negócio (Isolado)
+│   ├── usecases/         # Casos de uso da aplicação (Orquestração)
+│   ├── infrastructure/   # Controladores FastAPI e Persistência SQLite
+│   └── main.py           # Ponto de entrada da API
+├── client/               # Client Desktop Zero Fricção
+│   └── tracker.py        # Script em background (Tkinter + keyboard)
+├── docs/                 # Documentação e README oficial
+│   └── README.md
+├── ai_artifacts/         # Artefatos auxiliares de IA e especificações
+│   ├── wiki.md
+│   ├── agents.md
+│   └── logica_de_calculo.md
+├── requirements.txt      # Dependências do projeto
+└── .gitignore            # Exclusões do controle de versão
+```
+
 1. **Client Desktop (`/client`)**: 
    - Script rodando em background com gatilhos de teclado silenciosos (ex: `Ctrl+Shift+F`).
    - Usa interface nativa e minimalista (`tkinter`) para coleta super rápida de métricas no fim da sessão.
@@ -29,6 +50,32 @@ Implementado usando o **Design Pattern Strategy**, as regras de negócio avaliam
 2. **Simbiose Mágica (Buff)**: Alta utilização de IA resultando em preservação da energia vital.
 3. **Neblina Mental (Debuff)**: Foco consistentemente baixo. Sugere quebras de rotina ou hidratação.
 4. **Fluxo Sustentável (Condição Ideal)**: Manutenção perfeita e equilibrada entre as barras de energia e foco.
+
+## 🚀 Instalação e Execução
+
+### Pré-requisitos
+- Python 3.10 ou superior instalado.
+
+### Configuração do Ambiente
+1. Ative o ambiente virtual:
+   - **PowerShell:** `.venv\Scripts\Activate.ps1`
+   - **CMD:** `.venv\Scripts\activate.bat`
+2. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Execução
+- **Iniciar a API (Backend):**
+  ```bash
+  uvicorn api.main:app --reload
+  ```
+  Acesse a documentação interativa em `http://127.0.0.1:8000/docs` ou o health-check em `http://127.0.0.1:8000/health`.
+
+- **Iniciar o Monitor (Client Desktop):**
+  ```bash
+  python client/tracker.py
+  ```
 
 ---
 *Para detalhes matemáticos de implementação, consulte a `logica_de_calculo.md`.*
