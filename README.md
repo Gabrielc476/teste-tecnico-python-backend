@@ -73,11 +73,11 @@ A API estará disponível em `http://127.0.0.1:8000`. Acesse a documentação in
 
 ---
 
-## 🧪 Rodando os Testes de Validação do Domínio
+## 🧪 Rodando os Testes Unitários
 
-Desenvolvemos um script autônomo com asserções estritas que valida o comportamento matemático das métricas e das regras de priorização de feedbacks. Para rodá-los:
+Os testes validam o comportamento matemático das métricas, as regras de priorização de feedbacks e os casos de uso de registro e diagnóstico. Para executá-los:
 
 ```bash
-python .gemini/antigravity/brain/4f0203b7-7743-4904-bbf7-72b08c618d1d/scratch/test_domain.py
+python -m unittest tests/test_usecases.py -v
 ```
-*(Se estiver fora do ambiente do assistente, um teste unitário oficial em Pytest equivalente será fornecido na Fase 6).*
+

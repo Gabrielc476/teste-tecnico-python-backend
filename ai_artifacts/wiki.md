@@ -40,8 +40,10 @@ c:\projetos\desafio sou junior\
 ## 🧮 Métricas Base e Cálculos
 As métricas derivam dos registros (`FocusLog`), que armazenam:
 - Nível de Foco e Nível de Energia (Escala de 1-5)
-- Uso de Inteligência Artificial (Booleano)
 - Tempo em minutos (calculado pelo client)
+- Comentário (String descrevendo a sessão ou distração)
+- Uso de Inteligência Artificial (Booleano)
+- Categoria (Opcional: coding, reunião, estudo, etc.)
 
 **As fórmulas calculadas incluem:**
 - **Índice de Esgotamento**: Média da diferença matemática onde Foco > Energia. Quanto maior a discrepância, maior o custo cognitivo pago pelo usuário.

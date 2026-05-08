@@ -14,9 +14,9 @@ Este documento rastreia o progresso do desenvolvimento do projeto do zero à ent
 - [x] Implementar a classe pura `MetricsCalculator` (fórmulas de índice de esgotamento e média).
 
 ## Fase 3: Casos de Uso (Backend)
-- [ ] Criar Interface `FocusLogRepository` para inversão de dependência (SOLID).
-- [ ] Criar Caso de Uso: `RegisterFocusSessionUseCase` (Valida a entrada e persiste os dados).
-- [ ] Criar Caso de Uso: `GenerateProductivityDiagnosticsUseCase` (Busca todos os logs, passa pelo `MetricsCalculator` e gera o status via Strategy).
+- [x] Criar Interface `FocusLogRepository` para inversão de dependência (SOLID).
+- [x] Criar Caso de Uso: `RegisterFocusSessionUseCase` (Valida a entrada e persiste os dados).
+- [x] Criar Caso de Uso: `GenerateProductivityDiagnosticsUseCase` (Busca todos os logs, passa pelo `MetricsCalculator` e gera o status via Strategy).
 
 ## Fase 4: Banco de Dados e API (Backend)
 - [ ] Implementar a infraestrutura de Banco de Dados: `SQLiteFocusLogRepository` e modelos do SQLAlchemy.

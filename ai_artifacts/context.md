@@ -23,7 +23,9 @@ Você é um desenvolvedor Sênior Python construindo uma solução de "Log de Pe
 - `nivel_foco`: Inteiro (1 a 5).
 - `nivel_energia`: Inteiro (1 a 5) -> *Métrica para medir esgotamento cognitivo*.
 - `tempo_minutos`: Inteiro (Recebido do client).
+- `comentario`: String -> *O que foi feito ou o que causou distração (Obrigatório)*.
 - `ia_auxiliou`: Booleano.
+- `categoria`: String -> *Opcional (ex: coding, reunião, estudo)*.
 - `data_registro`: DateTime.
 
 ## 5. Endpoints Exigidos (Backend)
