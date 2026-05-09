@@ -9,13 +9,22 @@ O projeto adota Clean Architecture e está estruturado da seguinte forma:
 ```text
 c:\projetos\desafio sou junior\
 ├── .venv/                # Ambiente virtual Python
+├── .env                  # Variáveis de ambiente (DATABASE_URL) — não versionado
+├── .env.example          # Template de variáveis de ambiente para novos devs
 ├── api/                  # Backend FastAPI
-│   ├── domain/           # Entidades e Regras de Negócio (Isolado)
+│   ├── domain/           # Entidades e Regras de Negócio (Isolado, Python puro)
 │   │   ├── entities.py   # Dataclasses de domínio (FocusLog)
+│   │   ├── ports.py      # Interfaces/ABC de repositório (inversão de dependência)
 │   │   ├── metrics.py    # Calculadora de métricas de produtividade e esgotamento
-│   │   └── strategies.py # Matriz de estratégias de feedback profissional
+│   │   └── strategies.py # Matriz de estratégias de feedback (Strategy Pattern)
 │   ├── usecases/         # Casos de uso da aplicação (Orquestração)
-│   ├── infrastructure/   # Controladores FastAPI e Persistência SQLite
+│   ├── infrastructure/   # Camada externa: FastAPI, SQLModel/SQLite, DI
+│   │   ├── database.py   # Engine e Session factory (SQLModel + .env)
+│   │   ├── models.py     # Modelo ORM FocusLogModel (SQLModel, table=True)
+│   │   ├── repository.py # SQLiteFocusLogRepository (implementa ports.py)
+│   │   ├── container.py  # Container de Injeção de Dependência (Depends)
+│   │   ├── schemas.py    # Schemas Pydantic de request/response
+│   │   └── routes.py     # Rotas/Controllers do FastAPI
 │   └── main.py           # Ponto de entrada da API
 ├── client/               # Client Desktop Zero Fricção
 │   └── tracker.py        # Script em background (Tkinter + keyboard)
@@ -33,8 +42,8 @@ c:\projetos\desafio sou junior\
    - Script rodando em background com gatilhos de teclado silenciosos (ex: `Ctrl+Shift+F`).
    - Usa interface nativa e minimalista (`tkinter`) para coleta super rápida de métricas no fim da sessão.
 2. **Backend API (`/api`)**: 
-   - API construída com **FastAPI**.
-   - Responsável por persistir os logs de foco usando SQLite.
+   - API construída com **FastAPI** + **SQLModel** (ORM que unifica SQLAlchemy + Pydantic).
+   - Responsável por persistir os logs de foco usando **SQLite** (URL configurada via `.env`).
    - Processa os dados brutos para entregar um diagnóstico de produtividade refinado.
 
 ## 🧮 Métricas Base e Cálculos
@@ -69,6 +78,11 @@ Implementado usando o **Design Pattern Strategy**, as regras de negócio avaliam
    ```bash
    pip install -r requirements.txt
    ```
+3. Configure as variáveis de ambiente:
+   ```bash
+   cp .env.example .env
+   ```
+   O arquivo `.env` já vem com o valor padrão `DATABASE_URL=sqlite:///./api/infrastructure/focus.db`.
 
 ### Execução
 - **Iniciar a API (Backend):**

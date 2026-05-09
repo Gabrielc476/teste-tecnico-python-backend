@@ -19,10 +19,10 @@ Este documento rastreia o progresso do desenvolvimento do projeto do zero à ent
 - [x] Criar Caso de Uso: `GenerateProductivityDiagnosticsUseCase` (Busca todos os logs, passa pelo `MetricsCalculator` e gera o status via Strategy).
 
 ## Fase 4: Banco de Dados e API (Backend)
-- [ ] Implementar a infraestrutura de Banco de Dados: `SQLiteFocusLogRepository` e modelos do SQLAlchemy.
-- [ ] Configurar o Container de Injeção de Dependência.
-- [ ] Criar Rotas (Controllers) do FastAPI: `POST /registro-foco` usando esquemas do Pydantic.
-- [ ] Criar Rotas (Controllers) do FastAPI: `GET /diagnostico-produtividade`.
+- [x] Implementar a infraestrutura de Banco de Dados: `SQLiteFocusLogRepository` e modelos do SQLModel.
+- [x] Configurar o Container de Injeção de Dependência.
+- [x] Criar Rotas (Controllers) do FastAPI: `POST /registro-foco` usando os modelos SQLModel diretamente.
+- [x] Criar Rotas (Controllers) do FastAPI: `GET /diagnostico-produtividade`.
 
 ## Fase 5: Client Desktop Zero Fricção
 - [ ] Criar a classe principal do Tracker e a lógica de timer invisível no background usando `keyboard`.

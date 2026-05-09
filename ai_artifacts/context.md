@@ -4,7 +4,7 @@
 Você é um desenvolvedor Sênior Python construindo uma solução de "Log de Performance" dividida em duas partes: um **Backend (API)** e um **Client Desktop (Zero Fricção)**. O objetivo é medir o estado de fluxo (flow) com adaptações para auxiliar pessoas com TDAH, medindo o custo energético do foco e o ganho de produtividade ao utilizar ferramentas de IA. A entrada de dados deve ter fricção mínima.
 
 ## 2. Diretrizes de Arquitetura e Engenharia
-- **Linguagem/Framework:** Python 3.x. Backend em FastAPI e Client usando bibliotecas nativas (`tkinter`, `keyboard`).
+- **Linguagem/Framework:** Python 3.x. Backend em FastAPI + SQLModel (ORM) e Client usando bibliotecas nativas (`tkinter`, `keyboard`). Configurações sensíveis (DATABASE_URL) carregadas via `.env` com `python-dotenv`.
 - **Princípios:** Aplique estritamente Clean Architecture, SOLID e Clean Code no Backend.
 - **Estrutura do Repositório:** O código deve ser dividido claramente em duas pastas principais:
   - `/api`: Contém o Domínio, Casos de Uso e Infraestrutura (FastAPI, SQLite).
@@ -33,7 +33,7 @@ Você é um desenvolvedor Sênior Python construindo uma solução de "Log de Pe
 ### 5.1. POST /registro-foco
 - Recebe os dados do bloco de trabalho enviados pelo Client Desktop.
 - Valida estritamente usando Pydantic se `nivel_foco` e `nivel_energia` estão entre 1 e 5.
-- Persiste os dados no SQLite (via injeção de dependência do repositório).
+- Persiste os dados no SQLite via SQLModel (injeção de dependência do repositório).
 
 ### 5.2. GET /diagnostico-produtividade
 Retorna um resumo analítico de todas as sessões. Deve processar as regras de negócio de TDAH e IA para gerar feedbacks gamificados.
@@ -52,5 +52,5 @@ O JSON de resposta deve conter:
 2. Implemente o `/client/tracker.py` usando `keyboard` e `tkinter`.
 3. No Backend (`/api`), inicie criando as Entidades de Domínio e as Interfaces de Repositório.
 4. Implemente os Casos de Uso (Use Cases), utilizando o Design Pattern *Strategy* para as regras de geração da `mensagem_feedback`.
-5. Finalize com a camada de Infraestrutura (FastAPI Routers e SQLAlchemy/SQLite).
+5. Finalize com a camada de Infraestrutura (FastAPI Routers e SQLModel/SQLite).
 6. Mantenha os métodos curtos, descritivos e tipe todos os parâmetros e retornos (Type Hints).
