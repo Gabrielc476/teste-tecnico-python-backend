@@ -29,20 +29,23 @@ Mede a frequência com que a IA atuou como auxiliar de desenvolvimento nas sess�
 ## 3. Matriz de Feedbacks (Regras de Negócio)
 O gerador de diagnóstico deve avaliar as métricas calculadas acima contra as seguintes regras, em ordem de prioridade. A primeira regra que retornar verdadeira definirá a `mensagem_feedback` da resposta.
 
+> [!NOTE]
+> Todos os valores de limiar (*thresholds*) listados abaixo estão definidos de forma limpa na classe de domínio `ProductivityMetrics` como constantes do tipo `ClassVar[float]`, permitindo modificações centralizadas.
+
 ### Regra 1: Hiperfoco Exaustivo (Debuff)
-- **Condição:** `indice_esgotamento >= 2.0` E `media_foco >= 4.0`
+- **Condição:** `indice_esgotamento >= LIMIT_EXHAUSTION_INDEX` (padrão: `2.0`) E `media_foco >= LIMIT_HIGH_FOCUS` (padrão: `4.0`)
 - **Mensagem:** "Status: Hiperfoco Exaustivo. Sua mana está no fim. Hora de fazer um 'Descanso Curto' ou você vai rolar com desvantagem na atenção no próximo bloco."
 
 ### Regra 2: Simbiose Mágica com IA (Buff)
-- **Condição:** `taxa_uso_ia >= 50.0%` E `media_energia >= 3.0`
+- **Condição:** `taxa_uso_ia >= LIMIT_SYMBIOSIS_IA_RATE` (padrão: `50.0%`) E `media_energia >= LIMIT_SYMBIOSIS_ENERGY` (padrão: `3.0`)
 - **Mensagem:** "Buff Ativo: Simbiose Mágica. A IA serviu como um excelente familiar, acelerando suas entregas sem drenar sua bateria mental."
 
 ### Regra 3: Neblina Mental (Debuff)
-- **Condição:** `media_foco < 2.5`
+- **Condição:** `media_foco < LIMIT_FOG_FOCUS` (padrão: `2.5`)
 - **Mensagem:** "Debuff: Neblina Mental. Foco baixo detectado. Considere mudar de ambiente, beber água ou dividir a próxima tarefa em pedaços menores (micro-vitórias)."
 
 ### Regra 4: Fluxo Sustentável (Condição Ideal)
-- **Condição:** `media_foco` entre `3.0` e `4.5` E `media_energia >= 3.5`
+- **Condição:** `media_foco` entre `LIMIT_FLOW_MIN_FOCUS` (`3.0`) e `LIMIT_FLOW_MAX_FOCUS` (`4.5`) E `media_energia >= LIMIT_FLOW_ENERGY` (`3.5`)
 - **Mensagem:** "Condição Ideal: Fluxo Sustentável. Você manteve um ritmo constante sem sacrificar seus pontos de vida. Excelente gestão de estamina."
 
 ### Regra Default (Fallback)

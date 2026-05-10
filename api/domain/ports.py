@@ -1,18 +1,19 @@
 from abc import ABC, abstractmethod
-from typing import List
 from api.domain.entities import FocusLog
+from api.domain.metrics import ProductivityMetrics
 
 class FocusLogRepository(ABC):
     @abstractmethod
-    def save(self, log: FocusLog) -> FocusLog:
+    async def save(self, log: FocusLog) -> FocusLog:
         """
-        Persiste um registro de foco e retorna o objeto salvo.
+        Persiste de forma assíncrona um registro de foco e retorna o objeto salvo.
         """
         pass
 
     @abstractmethod
-    def find_all(self) -> List[FocusLog]:
+    async def get_aggregated_metrics(self) -> ProductivityMetrics:
         """
-        Retorna todos os registros de foco persistidos.
+        Calcula e retorna as métricas consolidadas diretamente via banco de dados de forma assíncrona.
         """
         pass
+

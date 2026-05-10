@@ -1,52 +1,75 @@
 from dataclasses import dataclass
-from typing import List
-from api.domain.entities import FocusLog
+from typing import ClassVar
 
 @dataclass(frozen=True)
 class ProductivityMetrics:
+    # Constantes de limiar (Thresholds) para avaliação de saúde cognitiva
+    LIMIT_EXHAUSTION_INDEX: ClassVar[float] = 2.0
+    LIMIT_HIGH_FOCUS: ClassVar[float] = 4.0
+    LIMIT_SYMBIOSIS_IA_RATE: ClassVar[float] = 50.0
+    LIMIT_SYMBIOSIS_ENERGY: ClassVar[float] = 3.0
+    LIMIT_FOG_FOCUS: ClassVar[float] = 2.5
+    LIMIT_FLOW_MIN_FOCUS: ClassVar[float] = 3.0
+    LIMIT_FLOW_MAX_FOCUS: ClassVar[float] = 4.5
+    LIMIT_FLOW_ENERGY: ClassVar[float] = 3.5
+
     media_foco: float
     media_energia: float
     tempo_total_focado: int
     taxa_uso_ia: float
     indice_esgotamento: float
+    total_sessoes: int
 
-class MetricsCalculator:
-    @staticmethod
-    def calcular_media_foco(logs: List[FocusLog]) -> float:
-        if not logs:
-            return 0.0
-        return sum(log.nivel_foco for log in logs) / len(logs)
+    def is_exhaustive_hyperfocus(self) -> bool:
+        """Foco excelente com alto esgotamento cognitivo."""
+        return self.indice_esgotamento >= self.LIMIT_EXHAUSTION_INDEX and self.media_foco >= self.LIMIT_HIGH_FOCUS
 
-    @staticmethod
-    def calcular_media_energia(logs: List[FocusLog]) -> float:
-        if not logs:
-            return 0.0
-        return sum(log.nivel_energia for log in logs) / len(logs)
+    def is_magical_symbiosis(self) -> bool:
+        """Identifica uso produtivo de IA com preservação de energia."""
+        return self.taxa_uso_ia >= self.LIMIT_SYMBIOSIS_IA_RATE and self.media_energia >= self.LIMIT_SYMBIOSIS_ENERGY
 
-    @staticmethod
-    def calcular_tempo_total(logs: List[FocusLog]) -> int:
-        return sum(log.tempo_minutos for log in logs)
+    def is_mental_fog(self) -> bool:
+        """Alerta de neblina mental se o foco for persistentemente baixo."""
+        return self.media_foco < self.LIMIT_FOG_FOCUS
 
-    @staticmethod
-    def calcular_taxa_uso_ia(logs: List[FocusLog]) -> float:
-        if not logs:
-            return 0.0
-        sessoes_com_ia = sum(1 for log in logs if log.ia_auxiliou)
-        return (sessoes_com_ia / len(logs)) * 100.0
+    def is_sustainable_flow(self) -> bool:
+        """Estado ideal equilibrado de energia e atenção."""
+        return self.LIMIT_FLOW_MIN_FOCUS <= self.media_foco <= self.LIMIT_FLOW_MAX_FOCUS and self.media_energia >= self.LIMIT_FLOW_ENERGY
 
-    @staticmethod
-    def calcular_indice_esgotamento(logs: List[FocusLog]) -> float:
-        if not logs:
-            return 0.0
-        soma_diferencas = sum(max(0, log.nivel_foco - log.nivel_energia) for log in logs)
-        return soma_diferencas / len(logs)
+    def evaluate_feedback(self) -> str:
+        """
+        Avalia as métricas consolidadas e retorna a mensagem de feedback apropriada.
+        Segue uma ordem estrita de prioridades de avaliação de saúde cognitiva.
+        """
+        if self.total_sessoes == 0:
+            return "Nenhuma sessão registrada ainda. Comece a registrar sessões para visualizar seus padrões!"
 
-    @classmethod
-    def gerar_diagnostico(cls, logs: List[FocusLog]) -> ProductivityMetrics:
-        return ProductivityMetrics(
-            media_foco=cls.calcular_media_foco(logs),
-            media_energia=cls.calcular_media_energia(logs),
-            tempo_total_focado=cls.calcular_tempo_total(logs),
-            taxa_uso_ia=cls.calcular_taxa_uso_ia(logs),
-            indice_esgotamento=cls.calcular_indice_esgotamento(logs)
+        if self.is_exhaustive_hyperfocus():
+            return (
+                "Hiperfoco Exaustivo: Foco excelente, mas com alto custo energético. "
+                "Recomendamos uma pausa para descanso cognitivo antes de iniciar o próximo bloco de tarefas."
+            )
+
+        if self.is_magical_symbiosis():
+            return (
+                "Simbiose com IA: O apoio da inteligência artificial otimizou suas entregas "
+                "e ajudou a poupar sua energia mental."
+            )
+
+        if self.is_mental_fog():
+            return (
+                "Neblina Mental: Nível de foco abaixo do esperado. Experimente mudar de ambiente, "
+                "beber água ou dividir sua próxima meta em tarefas menores."
+            )
+
+        if self.is_sustainable_flow():
+            return (
+                "Fluxo Sustentável: Excelente equilíbrio entre foco e energia! "
+                "Você manteve um ritmo constante e produtivo sem se esgotar."
+            )
+
+        return (
+            "Sessão registrada. Continue acompanhando suas métricas para "
+            "identificar seus padrões ideais de foco e produtividade."
         )
+

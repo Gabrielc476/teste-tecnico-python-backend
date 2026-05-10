@@ -1,16 +1,20 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import SQLModel
-from api.infrastructure.database import engine
+from api.infrastructure.database import init_db
 from api.infrastructure.routes import router
 
-# Cria as tabelas do banco de dados na inicialização (se não existirem)
-SQLModel.metadata.create_all(engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Cria as tabelas de forma assíncrona se não existirem
+    await init_db()
+    yield
 
 app = FastAPI(
     title="Foco TDAH API",
     description="API de Log de Performance e Foco com métricas de esgotamento e simbiose com IA.",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Permitir comunicação local do Client Desktop com a API

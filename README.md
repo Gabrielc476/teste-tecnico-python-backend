@@ -31,8 +31,9 @@ c:\projetos\desafio sou junior\
 
 ## 🧮 Lógica de Negócio e Métricas (Fase 2)
 
-Na camada de domínio, toda a matemática e matriz de feedbacks foram estruturadas e validadas:
+Na camada de domínio, toda a matemática e matriz de feedbacks foram estruturadas, parametrizadas e validadas:
 
+*   **Eliminação de Magic Numbers (ClassVar):** Os limiares de controle de estamina mental não possuem valores numéricos soltos (*hardcoded*) no domínio. Toda a parametrização utiliza constantes de classe em [metrics.py](file:///c:/projetos/desafio%20sou%20junior/api/domain/metrics.py) através de `ClassVar[float]`, garantindo parametrização limpa e flexível.
 *   **Índice de Esgotamento Cognitivo (Burnout Index):** Mede o real custo metabólico e cognitivo do foco. Pessoas com TDAH entram com frequência em estados de hiperfoco que drenam totalmente sua stamina. A fórmula é dada por:
     $$I_{esgotamento} = \frac{\sum_{i=1}^{N} \max(0, Foco_i - Energia_i)}{N}$$
 *   **Padrão Strategy (Matriz de Feedbacks):** As regras de diagnóstico inteligentes avaliam as sessões de foco em ordem de prioridade estrita, gerando relatórios precisos sem termos punitivos ou jargões lúdicos excessivos:
@@ -41,6 +42,16 @@ Na camada de domínio, toda a matemática e matriz de feedbacks foram estruturad
     3.  **Neblina Mental:** Alerta para foco persistentemente baixo, instruindo micro-metas ou descanso físico.
     4.  **Fluxo Sustentável:** Estado ideal equilibrado de energia e atenção.
     5.  **Fallback (Default):** Retorno de feedback padrão encorajador.
+
+---
+
+## 🔒 Concorrência Resiliente e Configuração no Client Desktop
+
+O Client Desktop em [tracker.py](file:///c:/projetos/desafio%20sou%20junior/client/tracker.py) foi projetado para rodar de forma thread-safe e configurável:
+
+*   **Bloqueio Atômico de I/O (`FILE_LOCK`):** Para evitar condições de corrida (Race Conditions) ao manipular a sessão ativa (`.current_session.json`) ou a fila de sincronização offline (`offline_queue.json`) a partir de diferentes threads em segundo plano, todas as operações de leitura, gravação e exclusão são protegidas por um bloqueio atômico de exclusão mútua (`threading.Lock`).
+*   **Variáveis de Ambiente (`.env`):** A URL de comunicação da API não é hardcoded no código do tracker. Ela é carregada de forma dinâmica utilizando `python-dotenv` através do parâmetro `API_URL` com fallback limpo.
+*   **Falha Graciosa:** Tratamento de erros detalhado e específico (ex: `json.JSONDecodeError`, `OSError`), garantindo que falhas em rede ou de leitura de arquivos corrompidos não causem crash no client.
 
 ---
 

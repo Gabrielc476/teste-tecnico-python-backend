@@ -7,10 +7,17 @@ import time
 from datetime import datetime
 import customtkinter as ctk
 import requests
+from dotenv import load_dotenv
+
+# Carrega as variáveis de ambiente do arquivo .env
+load_dotenv()
 
 SESSION_FILE = ".current_session.json"
 OFFLINE_QUEUE = "offline_queue.json"
-API_URL = "http://127.0.0.1:8000"
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+
+# Lock para sincronização de acesso concorrente aos arquivos de sessão e fila offline
+FILE_LOCK = threading.Lock()
 
 def create_image(active=False):
     # Generates a solid colored icon
@@ -28,21 +35,32 @@ class FocusTracker:
         self.check_active_session()
         
     def check_active_session(self):
-        if os.path.exists(SESSION_FILE):
-            try:
-                with open(SESSION_FILE, 'r') as f:
-                    data = json.load(f)
-                    start_str = data.get("start_time")
-                    if start_str:
-                        self.start_time = datetime.fromisoformat(start_str)
-                        self.is_tracking = True
-            except Exception:
-                os.remove(SESSION_FILE)
+        with FILE_LOCK:
+            if os.path.exists(SESSION_FILE):
+                try:
+                    with open(SESSION_FILE, 'r') as f:
+                        data = json.load(f)
+                        start_str = data.get("start_time")
+                        if start_str:
+                            self.start_time = datetime.fromisoformat(start_str)
+                            self.is_tracking = True
+                except (json.JSONDecodeError, ValueError) as e:
+                    print(f"[WARNING] Session file corrupted, recreating: {e}")
+                    try:
+                        os.remove(SESSION_FILE)
+                    except OSError:
+                        pass
+                except OSError as e:
+                    print(f"[ERROR] OS error reading session file: {e}")
                 
     def save_session(self):
         if self.start_time:
-            with open(SESSION_FILE, 'w') as f:
-                json.dump({"start_time": self.start_time.isoformat()}, f)
+            with FILE_LOCK:
+                try:
+                    with open(SESSION_FILE, 'w') as f:
+                        json.dump({"start_time": self.start_time.isoformat()}, f)
+                except OSError as e:
+                    print(f"[ERROR] Failed to save session file: {e}")
                 
     def toggle_tracking(self, icon, item):
         if self.is_tracking:
@@ -69,8 +87,12 @@ class FocusTracker:
             minutos = 1
             
         self.is_tracking = False
-        if os.path.exists(SESSION_FILE):
-            os.remove(SESSION_FILE)
+        with FILE_LOCK:
+            if os.path.exists(SESSION_FILE):
+                try:
+                    os.remove(SESSION_FILE)
+                except OSError as e:
+                    print(f"[ERROR] Failed to remove session file: {e}")
             
         self.update_icon()
         
@@ -79,14 +101,16 @@ class FocusTracker:
         threading.Thread(target=self.show_popup, args=(minutos,), daemon=True).start()
 
     def sync_offline(self, icon=None, item=None):
-        if not os.path.exists(OFFLINE_QUEUE):
-            return
-            
-        try:
-            with open(OFFLINE_QUEUE, 'r') as f:
-                queue = json.load(f)
-        except Exception:
-            queue = []
+        with FILE_LOCK:
+            if not os.path.exists(OFFLINE_QUEUE):
+                return
+                
+            try:
+                with open(OFFLINE_QUEUE, 'r') as f:
+                    queue = json.load(f)
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"[ERROR] Failed to read offline queue: {e}")
+                queue = []
             
         if not queue:
             return
@@ -100,8 +124,12 @@ class FocusTracker:
             except requests.RequestException:
                 remaining.append(payload)
                 
-        with open(OFFLINE_QUEUE, 'w') as f:
-            json.dump(remaining, f)
+        with FILE_LOCK:
+            try:
+                with open(OFFLINE_QUEUE, 'w') as f:
+                    json.dump(remaining, f)
+            except OSError as e:
+                print(f"[ERROR] Failed to write offline queue: {e}")
 
     def show_popup(self, minutos):
         # Configure CustomTkinter
@@ -110,7 +138,7 @@ class FocusTracker:
         
         app = ctk.CTk()
         app.title("Sessão Concluída")
-        app.geometry("400x520")
+        app.geometry("400x600")
         app.attributes("-topmost", True)
         
         # Centralizar na tela
@@ -134,6 +162,14 @@ class FocusTracker:
         energia_slider.set(3)
         energia_slider.pack(pady=5)
         
+        # Categoria
+        categoria_lbl = ctk.CTkLabel(app, text="Categoria:")
+        categoria_lbl.pack(pady=(10, 0))
+        categoria_options = ["Trabalho", "Estudo", "Projeto Pessoal", "Reunião", "Leitura", "Outros"]
+        categoria_var = ctk.StringVar(value="Trabalho")
+        categoria_menu = ctk.CTkOptionMenu(app, values=categoria_options, variable=categoria_var)
+        categoria_menu.pack(pady=5)
+
         # IA Auxiliou
         ia_var = ctk.BooleanVar(value=False)
         ia_check = ctk.CTkCheckBox(app, text="A Inteligência Artificial auxiliou na tarefa?", variable=ia_var)
@@ -153,6 +189,7 @@ class FocusTracker:
             foco = int(foco_slider.get())
             energia = int(energia_slider.get())
             ia = ia_var.get()
+            categoria = categoria_var.get()
             
             # Fricção reduzida: comentário só é obrigatório nos extremos (1 ou 5)
             if not comentario and (foco == 1 or foco == 5):
@@ -164,7 +201,8 @@ class FocusTracker:
                 "nivel_energia": energia,
                 "tempo_minutos": minutos,
                 "comentario": comentario or "Sessão regular",
-                "ia_auxiliou": ia
+                "ia_auxiliou": ia,
+                "categoria": categoria
             }
             
             # Enviar para a API
@@ -173,16 +211,20 @@ class FocusTracker:
                 resp.raise_for_status()
             except requests.RequestException:
                 # API Offline: Usar Fila (Outbox)
-                queue = []
-                if os.path.exists(OFFLINE_QUEUE):
+                with FILE_LOCK:
+                    queue = []
+                    if os.path.exists(OFFLINE_QUEUE):
+                        try:
+                            with open(OFFLINE_QUEUE, 'r') as f:
+                                queue = json.load(f)
+                        except (json.JSONDecodeError, OSError) as e:
+                            print(f"[WARNING] Offline queue corrupted or unreadable, recreating: {e}")
+                    queue.append(payload)
                     try:
-                        with open(OFFLINE_QUEUE, 'r') as f:
-                            queue = json.load(f)
-                    except Exception:
-                        pass
-                queue.append(payload)
-                with open(OFFLINE_QUEUE, 'w') as f:
-                    json.dump(queue, f)
+                        with open(OFFLINE_QUEUE, 'w') as f:
+                            json.dump(queue, f)
+                    except OSError as e:
+                        print(f"[ERROR] Failed to save session to offline queue: {e}")
             
             app.destroy()
             
@@ -198,11 +240,53 @@ class FocusTracker:
         
         app.mainloop()
 
+    def open_diagnostics(self, icon, item):
+        threading.Thread(target=self.show_diagnostics_popup, daemon=True).start()
+
+    def show_diagnostics_popup(self):
+        try:
+            resp = requests.get(f"{API_URL}/diagnostico-produtividade", timeout=5)
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception:
+            data = {"mensagem_feedback": "Não foi possível conectar à API localmente.", "total_sessoes": 0}
+
+        ctk.set_appearance_mode("Dark")
+        ctk.set_default_color_theme("blue")
+        
+        app = ctk.CTk()
+        app.title("Diagnóstico de Produtividade")
+        app.geometry("450x420")
+        app.attributes("-topmost", True)
+        app.eval('tk::PlaceWindow . center')
+        
+        title = ctk.CTkLabel(app, text="Seu Diagnóstico", font=ctk.CTkFont(size=20, weight="bold"))
+        title.pack(pady=(20, 10))
+        
+        metrics_frame = ctk.CTkFrame(app)
+        metrics_frame.pack(pady=10, padx=20, fill="both", expand=True)
+        
+        ctk.CTkLabel(metrics_frame, text=f"Total de Sessões: {data.get('total_sessoes', 0)}").pack(pady=2)
+        ctk.CTkLabel(metrics_frame, text=f"Tempo Total: {data.get('tempo_total_focado', 0)} minutos").pack(pady=2)
+        ctk.CTkLabel(metrics_frame, text=f"Foco Médio: {data.get('media_foco', 0)}/5").pack(pady=2)
+        ctk.CTkLabel(metrics_frame, text=f"Energia Média: {data.get('media_energia', 0)}/5").pack(pady=2)
+        ctk.CTkLabel(metrics_frame, text=f"Índice de Esgotamento: {data.get('indice_esgotamento', 0)}").pack(pady=2)
+        ctk.CTkLabel(metrics_frame, text=f"Uso de IA: {data.get('taxa_uso_ia', 0)}%").pack(pady=2)
+        
+        feedback_lbl = ctk.CTkLabel(app, text=data.get('mensagem_feedback', ''), wraplength=400, justify="center")
+        feedback_lbl.pack(pady=15, padx=10)
+        
+        btn_close = ctk.CTkButton(app, text="Fechar", command=app.destroy)
+        btn_close.pack(pady=10)
+        
+        app.mainloop()
+
     def update_icon(self):
         if self.icon:
             self.icon.icon = create_image(self.is_tracking)
             menu = (
                 pystray.MenuItem("Parar Foco" if self.is_tracking else "Iniciar Foco", self.toggle_tracking, default=True),
+                pystray.MenuItem("Ver Diagnóstico", self.open_diagnostics),
                 pystray.MenuItem("Sincronizar Offline", self.sync_offline),
                 pystray.MenuItem("Sair", self.quit)
             )
@@ -214,6 +298,7 @@ class FocusTracker:
     def run(self):
         menu = (
             pystray.MenuItem("Parar Foco" if self.is_tracking else "Iniciar Foco", self.toggle_tracking, default=True),
+            pystray.MenuItem("Ver Diagnóstico", self.open_diagnostics),
             pystray.MenuItem("Sincronizar Offline", self.sync_offline),
             pystray.MenuItem("Sair", self.quit)
         )

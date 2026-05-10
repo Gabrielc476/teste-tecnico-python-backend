@@ -84,9 +84,31 @@ Implementado usando o **Design Pattern Strategy**, as regras de negócio avaliam
    ```bash
    cp .env.example .env
    ```
-   O arquivo `.env` já vem com o valor padrão `DATABASE_URL=sqlite:///./api/infrastructure/focus.db`.
+   O arquivo `.env` gerencia as seguintes configurações:
+   - `DATABASE_URL=sqlite:///./api/infrastructure/focus.db` — Configura o endereço de persistência do backend.
+   - `API_URL=http://127.0.0.1:8000` — Define a URL base que o Client Desktop (`tracker.py`) utiliza para se comunicar com a API.
 
-### Execução
+---
+
+## 🔒 Concorrência Resiliente e Tratamento de Erros no Client
+O script `/client/tracker.py` executa loops e submissões assíncronas em threads de background. Para evitar condições de corrida (Race Conditions) ao ler, escrever ou excluir dados concorrentes nos arquivos `.current_session.json` e `offline_queue.json`, o tracker implementa:
+- **`FILE_LOCK` (`threading.Lock`)**: Bloqueio de sincronização exclusiva que envelopa todas as rotinas críticas de arquivos (Outbox pattern).
+- **Tratamento de Exceções Direcionado**: Em vez de engolir exceções com capturas genéricas, o tracker intercepta especificamente erros de rede, problemas de I/O (`OSError`), codificação JSON (`json.JSONDecodeError`) e dados corrompidos.
+
+## 🧮 Métricas Base e Cálculos
+As métricas derivam dos registros (`FocusLog`), que armazenam:
+- Nível de Foco e Nível de Energia (Escala de 1-5)
+- Tempo em minutos (calculado pelo client)
+- Comentário (String descrevendo a sessão ou distração)
+- Uso de Inteligência Artificial (Booleano)
+- Categoria (Opcional: coding, reunião, estudo, etc.)
+
+> [!NOTE]
+> Os limites de corte das regras e métricas (como limiar de esgotamento e taxa mínima de IA) são controlados via constantes de classe `ClassVar` no modelo `ProductivityMetrics` em [metrics.py](file:///c:/projetos/desafio%20sou%20junior/api/domain/metrics.py), removendo quaisquer magic numbers soltos do código de produção.
+
+**As fórmulas calculadas incluem:**
+- **Índice de Esgotamento**: Média da diferença matemática onde Foco > Energia. Quanto maior a discrepância, maior o custo cognitivo pago pelo usuário.
+- **Taxa de Uso de IA (%)**: Sessões com auxílio de IA em relação ao total de sessões.
 - **Iniciar a API (Backend):**
   ```bash
   uvicorn api.main:app --reload
