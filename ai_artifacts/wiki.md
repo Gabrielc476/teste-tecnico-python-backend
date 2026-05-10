@@ -12,7 +12,9 @@ c:\projetos\desafio sou junior\
 ├── .env                  # Variáveis de ambiente (DATABASE_URL) — não versionado
 ├── .env.example          # Template de variáveis de ambiente para novos devs
 ├── api/                  # Backend FastAPI
+│   ├── __init__.py       # Inicializador do pacote api
 │   ├── domain/           # Entidades e Regras de Negócio (Isolado, Python puro)
+│   │   ├── __init__.py   # Inicializador do pacote domain
 │   │   ├── entities.py   # Dataclasses de domínio (FocusLog)
 │   │   ├── ports.py      # Interfaces/ABC de repositório (inversão de dependência)
 │   │   ├── metrics.py    # Calculadora de métricas de produtividade e esgotamento
@@ -26,8 +28,8 @@ c:\projetos\desafio sou junior\
 │   │   ├── schemas.py    # Schemas Pydantic de request/response
 │   │   └── routes.py     # Rotas/Controllers do FastAPI
 │   └── main.py           # Ponto de entrada da API
-├── client/               # Client Desktop Zero Fricção
-│   └── tracker.py        # Script em background (Tkinter + keyboard)
+├── client/               # Client Desktop Resiliente (TDAH-Friendly)
+│   └── tracker.py        # Script em background (pystray + customtkinter)
 ├── docs/                 # Documentação e README oficial
 │   └── README.md
 ├── ai_artifacts/         # Artefatos auxiliares de IA e especificações
@@ -39,8 +41,8 @@ c:\projetos\desafio sou junior\
 ```
 
 1. **Client Desktop (`/client`)**: 
-   - Script rodando em background com gatilhos de teclado silenciosos (ex: `Ctrl+Shift+F`).
-   - Usa interface nativa e minimalista (`tkinter`) para coleta super rápida de métricas no fim da sessão.
+   - Script rodando silenciosamente com ícone de controle na Bandeja do Sistema (System Tray).
+   - Usa interface moderna e minimalista (`customtkinter`) para coleta super rápida de métricas no fim da sessão, além de persistência offline.
 2. **Backend API (`/api`)**: 
    - API construída com **FastAPI** + **SQLModel** (ORM que unifica SQLAlchemy + Pydantic).
    - Responsável por persistir os logs de foco usando **SQLite** (URL configurada via `.env`).

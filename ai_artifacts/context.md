@@ -4,15 +4,15 @@
 Você é um desenvolvedor Sênior Python construindo uma solução de "Log de Performance" dividida em duas partes: um **Backend (API)** e um **Client Desktop (Zero Fricção)**. O objetivo é medir o estado de fluxo (flow) com adaptações para auxiliar pessoas com TDAH, medindo o custo energético do foco e o ganho de produtividade ao utilizar ferramentas de IA. A entrada de dados deve ter fricção mínima.
 
 ## 2. Diretrizes de Arquitetura e Engenharia
-- **Linguagem/Framework:** Python 3.x. Backend em FastAPI + SQLModel (ORM) e Client usando bibliotecas nativas (`tkinter`, `keyboard`). Configurações sensíveis (DATABASE_URL) carregadas via `.env` com `python-dotenv`.
+- **Linguagem/Framework:** Python 3.x. Backend em FastAPI + SQLModel (ORM) e Client usando bibliotecas modernas (`customtkinter`, `pystray`). Configurações sensíveis (DATABASE_URL) carregadas via `.env` com `python-dotenv`.
 - **Princípios:** Aplique estritamente Clean Architecture, SOLID e Clean Code no Backend.
 - **Estrutura do Repositório:** O código deve ser dividido claramente em duas pastas principais:
   - `/api`: Contém o Domínio, Casos de Uso e Infraestrutura (FastAPI, SQLite).
-  - `/client`: Contém o script de atalho global em background.
+  - `/client`: Contém o script residente na bandeja do sistema (System Tray).
 
 ## 3. Especificações do Client Desktop (Zero Fricção)
-- **Gatilho:** Um atalho global de teclado (ex: `Ctrl + Shift + F`) para iniciar e parar o timer da sessão de foco silenciosamente em background.
-- **Interface:** Ao encerrar a sessão, exibe uma janela minimalista nativa (`tkinter`) sobrepondo a IDE.
+- **Gatilho:** Um ícone na Bandeja do Sistema (System Tray) para iniciar e parar o timer da sessão de foco silenciosamente em background e com recuperação de estado (crash recovery).
+- **Interface:** Ao encerrar a sessão, exibe uma janela minimalista e moderna (`customtkinter`) sobrepondo a IDE.
 - **Coleta:** Pede apenas `nivel_foco` (1-5, slider), `nivel_energia` (1-5, slider) e `ia_auxiliou` (checkbox). O `tempo_minutos` é calculado automaticamente pelo client.
 - **Comunicação:** Ao confirmar, envia o payload via `requests.post` para a API e fecha a janela imediatamente.
 
@@ -49,7 +49,7 @@ O JSON de resposta deve conter:
 
 ## 6. Instruções de Execução para a IA
 1. Crie a estrutura de pastas separando `/api` e `/client`.
-2. Implemente o `/client/tracker.py` usando `keyboard` e `tkinter`.
+2. Implemente o `/client/tracker.py` usando `pystray` e `customtkinter`.
 3. No Backend (`/api`), inicie criando as Entidades de Domínio e as Interfaces de Repositório.
 4. Implemente os Casos de Uso (Use Cases), utilizando o Design Pattern *Strategy* para as regras de geração da `mensagem_feedback`.
 5. Finalize com a camada de Infraestrutura (FastAPI Routers e SQLModel/SQLite).

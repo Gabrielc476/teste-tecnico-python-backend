@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from api.infrastructure.models import FocusLogModel
+from api.infrastructure.schemas import FocusLogRequest, FocusLogResponse
 from api.infrastructure.container import get_register_use_case, get_diagnostics_use_case
 from api.usecases.register_focus_session import RegisterFocusSessionUseCase
 from api.usecases.generate_diagnostics import GenerateProductivityDiagnosticsUseCase, DiagnosticsResult
 
 router = APIRouter()
 
-@router.post("/registro-foco", response_model=FocusLogModel, status_code=201, tags=["Sessões de Foco"])
+@router.post("/registro-foco", response_model=FocusLogResponse, status_code=201, tags=["Sessões de Foco"])
 def registrar_foco(
-    payload: FocusLogModel,
+    payload: FocusLogRequest,
     use_case: RegisterFocusSessionUseCase = Depends(get_register_use_case),
 ):
     """
@@ -24,7 +24,16 @@ def registrar_foco(
             ia_auxiliou=payload.ia_auxiliou,
             categoria=payload.categoria,
         )
-        return FocusLogModel.from_domain(log)
+        return FocusLogResponse(
+            id=str(log.id),
+            nivel_foco=log.nivel_foco,
+            nivel_energia=log.nivel_energia,
+            tempo_minutos=log.tempo_minutos,
+            comentario=log.comentario,
+            ia_auxiliou=log.ia_auxiliou,
+            categoria=log.categoria,
+            data_registro=log.data_registro,
+        )
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
 

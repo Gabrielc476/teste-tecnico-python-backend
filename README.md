@@ -2,7 +2,7 @@
 
 > Uma solução de alta performance desenvolvida para medir o estado de fluxo (*flow*), a simbiose com Inteligências Artificiais e o esgotamento cognitivo, adaptada especificamente com baixa fricção para pessoas com TDAH.
 
-Este projeto adota **Clean Architecture** e **SOLID** estritos na construção de um Backend em **FastAPI** aliado a um **Client Desktop nativo de Zero Fricção** (com atalhos globais de teclado e pop-up rápido em Tkinter).
+Este projeto adota **Clean Architecture** e **SOLID** estritos na construção de um Backend em **FastAPI** aliado a um **Client Desktop nativo e resiliente** (rodando na bandeja do sistema via `pystray` com pop-up moderno em `customtkinter`).
 
 ---
 
@@ -20,8 +20,8 @@ c:\projetos\desafio sou junior\
 │   │   ├── metrics.py     # Lógicas de cálculo puro (MetricsCalculator)
 │   │   └── strategies.py  # Regras de diagnósticos gamificados (Strategy Pattern)
 │   └── main.py            # Inicializador e rotas iniciais do FastAPI
-├── client/                # Client Desktop de Zero Fricção
-│   └── tracker.py         # Script em background em Tkinter e keyboard (placeholder)
+├── client/                # Client Desktop Resiliente (TDAH-Friendly)
+│   └── tracker.py         # Tracker via System Tray (pystray) e UI Moderna (customtkinter)
 ├── docs/                  # Documentação do desafio técnico original
 ├── ai_artifacts/          # Artefatos e especificações de IA (wiki, checklists)
 └── requirements.txt      # Dependências de execução
@@ -70,6 +70,13 @@ pip install -r requirements.txt
 uvicorn api.main:app --reload
 ```
 A API estará disponível em `http://127.0.0.1:8000`. Acesse a documentação interativa através de `http://127.0.0.1:8000/docs` ou verifique se está no ar acessando o health-check `/health`.
+
+### Passo 4: Iniciar o Client Desktop
+Em um novo terminal com o ambiente virtual ativado, rode:
+```bash
+python client/tracker.py
+```
+Um ícone aparecerá na Bandeja do Sistema (área de notificação do Windows). Clique com o botão direito sobre ele para iniciar e parar suas sessões de foco.
 
 ---
 

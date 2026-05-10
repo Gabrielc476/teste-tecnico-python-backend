@@ -7,5 +7,6 @@ python-dotenv>=1.0.0
 
 # Client Desktop
 requests>=2.31.0
-keyboard>=0.13.5
-# Nota: tkinter já é nativo na instalação padrão do Python no Windows.
+pystray>=0.19.0
+customtkinter>=5.2.2
+Pillow>=10.0.0

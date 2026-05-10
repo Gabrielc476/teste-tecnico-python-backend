@@ -25,9 +25,9 @@ Este documento rastreia o progresso do desenvolvimento do projeto do zero à ent
 - [x] Criar Rotas (Controllers) do FastAPI: `GET /diagnostico-produtividade`.
 
 ## Fase 5: Client Desktop Zero Fricção
-- [ ] Criar a classe principal do Tracker e a lógica de timer invisível no background usando `keyboard`.
-- [ ] Criar a Interface Gráfica nativa Minimalista com `tkinter` que só aparece ao encerrar o log (Sliders de 1 a 5 e Checkbox de IA).
-- [ ] Implementar a função de comunicação HTTP que faz o `POST /registro-foco` e limpa/encerra a tela.
+- [x] Criar a classe principal do Tracker e a lógica de timer invisível no background com persistência.
+- [x] Criar a Interface Gráfica nativa Minimalista com `customtkinter` e bandeja de sistema (`pystray`).
+- [x] Implementar a função de comunicação HTTP que faz o `POST /registro-foco` e padrão Outbox (offline queue).
 
 ## Fase 6: Testes, Polimento e Entrega
 - [ ] Escrever testes unitários em PyTest para o `MetricsCalculator` e para os `Strategies` de Feedback.
