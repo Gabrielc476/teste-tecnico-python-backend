@@ -16,12 +16,16 @@ async def registrar_foco(
     Valida as regras de entrada e armazena de forma persistente.
     """
     try:
+        # Defaults para os campos opcionais (retrocompatibilidade)
+        energia = payload.nivel_energia if payload.nivel_energia is not None else payload.nivel_foco
+        ia = payload.ia_auxiliou if payload.ia_auxiliou is not None else False
+
         log = await use_case.execute(
             nivel_foco=payload.nivel_foco,
-            nivel_energia=payload.nivel_energia,
+            nivel_energia=energia,
             tempo_minutos=payload.tempo_minutos,
             comentario=payload.comentario,
-            ia_auxiliou=payload.ia_auxiliou,
+            ia_auxiliou=ia,
             categoria=payload.categoria,
         )
         return FocusLogResponse(
